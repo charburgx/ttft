@@ -1,0 +1,19 @@
+.multiselect > .multiselect__control {
+    @apply rounded-none;
+    /*@apply bg-bg-50;*/
+}
+
+.multiselect > .multiselect__control--is-focused, .multiselect > .multiselect__control--is-focused:hover {
+    @apply border-acc-2;
+    @apply shadow-none;
+}
+
+.multiselect > .multiselect__menu {
+    @apply rounded-none z-10;
+}
+
+.multiselect > .multiselect__menu > .multiselect__menu-list {
+    @apply py-0;
+}
+
+/* multiselect__option multiselect__option--is-focused */

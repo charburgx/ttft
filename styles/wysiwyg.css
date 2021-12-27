@@ -1,0 +1,7 @@
+.wys-wrapper .wys-editor {
+    @apply bg-white;
+}
+
+.wys-wrapper .wys-editor, .wys-wrapper .wys-toolbar {
+    @apply border-form-out1 border-[1px] rounded-none;
+}

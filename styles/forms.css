@@ -1,0 +1,60 @@
+.form-text-input.form-error {
+    @apply
+        border-form-err-600 hover:border-form-err-600 focus:border-form-err-600
+        bg-form-err-50 bg-opacity-50
+        text-form-err-700
+        placeholder-form-err-700 placeholder-opacity-40;
+}
+
+.form-text-input {
+    @apply
+        mt-0.5
+        focus:outline-none
+        py-1 px-2
+        border-[1px] border-form-out1 hover:border-form-out2 focus:border-acc-2 disabled:border-form-out1
+        transition-colors duration-100
+}
+
+.btn-primary {
+    @apply bg-acc-2 hover:bg-acc-2-dark disabled:bg-acc-2-dark text-bg-50;
+}
+
+.btn-secondary {
+    @apply bg-form-out1 hover:bg-form-out2 disabled:bg-form-out2 text-black text-opacity-60;
+}
+
+.btn-primary:disabled, .btn-secondary:disabled {
+    @apply cursor-not-allowed;
+}
+
+form.formLogin .form-input, form.formLogin .form-text {
+    @apply mb-10;
+}
+
+form.formEdit .form-input, form.formEdit .multiselect {
+    @apply mb-10;
+}
+
+form.formEdit .form-input.form-no-margin {
+    @apply mb-0
+}
+
+form .label {
+    @apply text-sm font-semibold;
+}
+
+.formEdit input:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z'/%3e%3c/svg%3e");
+}
+
+.formCategoryManage > div {
+    @apply mb-4
+}
+
+.formCategoryManage .form-input, .formCategoryManage div.selector {
+    @apply mb-2
+}
+
+.formCategoryManage .multiselect {
+    @apply leading-3 max-w-[300px]
+}
