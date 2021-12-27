@@ -11,6 +11,7 @@
     "@mertasan/tailwindcss-variables": "^2.0.0",
     "axios": "^0.24.0",
     "axios-hooks": "^3.0.0",
+    "babel-plugin-superjson-next": "^0.4.2",
     "date-fns": "^2.27.0",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
@@ -25,8 +26,8 @@
     "react-schemaorg": "^2.0.0",
     "react-select": "^5.2.1",
     "react-waypoint": "^10.1.0",
-    "babel-plugin-superjson-next": "^0.4.2",
-    "schema-dts": "^1.0.0"
+    "schema-dts": "^1.0.0",
+    "superjson": "^1.8.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
