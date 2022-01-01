@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useContext} from 'react';
 import {AuthContext} from "../../api/user";
 import Link from 'next/link'
+import { useRouter } from 'next/router';
 
 
 interface OwnProps {}
@@ -13,26 +14,24 @@ const entryClass = "mr-5 font-sans text-xl text-main-300 font-normal inline-bloc
 
 const NavBar: FunctionComponent<Props> = (props) => {
     const auth = useContext(AuthContext)
+    const router = useRouter()
 
     const logout = () => {
-        auth.logout()
-            .then((res) => {
-            })
-            .catch((err) => {
-                console.log(err?.response?.data?.message)
-            })
-            .finally(() => {
-                // location.assign('/')
+        auth.logOut()
+            .then(() => {
+                router.push("/")
             })
     }
 
   return (
       <ul className="absolute right-0 top-0 md:mt-4 mt-[5.25rem]">
-          {(auth.loggedIn()) ?
+          {(auth.loggedIn) ?
               <>
                 <li className="inline">
                     <Entry href="/create" >
-                        Create
+                        <a className={entryClass} onClick={() => logout()}>
+                            Create
+                        </a>
                     </Entry>
                 </li>
                 <li className="inline">
@@ -42,7 +41,9 @@ const NavBar: FunctionComponent<Props> = (props) => {
                 </li>
                 <li className="inline">
                     <Entry href="/manage" >
-                        Manage
+                        <a className={entryClass} onClick={() => logout()}>
+                            Manage
+                        </a>
                     </Entry>
                 </li>
               </>
@@ -59,7 +60,7 @@ const NavBar: FunctionComponent<Props> = (props) => {
               // </Menu>
           : ''}
 
-          {!auth.loggedIn() ? ["Browse the Tools", "About", "Contact"].map(name => <li key={name} className="inline">
+          {!auth.loggedIn ? ["Browse the Tools", "About", "Contact"].map(name => <li key={name} className="inline">
               <Entry href="">
                   <a className={entryClass}>{name}</a>
               </Entry>

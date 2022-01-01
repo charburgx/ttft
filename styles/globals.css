@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
 @import "loaders.css";
-@import "forms.css";
 @import "components/MultiSelect.css";
 @import "wysiwyg.css";
 @import "post.css";
@@ -8,6 +7,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import "forms.css";
 
 :root {
     --card-top-height: 3rem;

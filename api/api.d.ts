@@ -3,7 +3,7 @@ type APIRes<T> = T;
 type APIError = {
     // response: {
         message: string,
-        errors?: {
+        fields?: {
             [field: string]: string
         },
         // status: number,

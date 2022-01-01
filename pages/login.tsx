@@ -1,15 +1,14 @@
-import React, {FunctionComponent, useContext} from 'react';
-import FormLogin from "../components/login/FormLogin";
-import {AuthContext} from "api/user";
-import { useRouter } from 'next/router';
+import { AuthContext } from "api/user";
+import FormLogin from "components/login/FormLogin";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useContext } from "react";
 
-interface OwnProps {}
-
-type Props = OwnProps
-
-const LoginPage: FunctionComponent<Props> = (props) => {
+const LoginPage: NextPage = () => {
     const auth = useContext(AuthContext);
     const router = useRouter()
+
+    console.log(auth.loggedIn)
 
     if(auth.loggedIn) router.push("/")
 
@@ -20,6 +19,6 @@ const LoginPage: FunctionComponent<Props> = (props) => {
           </div>
       </div>
     </>);
-};
+}
 
 export default LoginPage

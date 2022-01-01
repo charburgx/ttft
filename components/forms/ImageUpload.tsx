@@ -40,7 +40,7 @@ const ImageUpload: FunctionComponent<Props> = (props) => {
 
     useEffect(() => { setMessage(data?.success) }, [data])
     useEffect(() => { setMessage(error?.response?.data?.message)
-        console.log(error?.response?.data?.errors)
+        console.log(error?.response?.data?.fields)
     }, [error])
 
     return (<>

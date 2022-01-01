@@ -15,11 +15,11 @@
         transition-colors duration-100
 }
 
-.btn-primary {
+button.btn-primary {
     @apply bg-acc-2 hover:bg-acc-2-dark disabled:bg-acc-2-dark text-bg-50;
 }
 
-.btn-secondary {
+button.btn-secondary {
     @apply bg-form-out1 hover:bg-form-out2 disabled:bg-form-out2 text-black text-opacity-60;
 }
 
