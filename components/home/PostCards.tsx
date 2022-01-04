@@ -24,6 +24,8 @@ const PostCards: FunctionComponent<Props> = ({ posts, load, loading }) => {
         [Breakpoints['sm']]: 1
     }
 
+  if(loading) return <Loader className="text-center" />
+
   return ( <>
       <Masonry breakpointCols={breakpointCols}
                className="flex mx-auto -ml-sm px-sm"
@@ -47,9 +49,6 @@ const PostCards: FunctionComponent<Props> = ({ posts, load, loading }) => {
               </Fragment>)
           }
       </Masonry>
-      {
-        loading ? <Loader className="text-center" /> : ''
-      }
   </>)
 };
 

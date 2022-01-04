@@ -31,7 +31,8 @@
     "react-select": "^5.2.1",
     "react-waypoint": "^10.1.0",
     "schema-dts": "^1.0.0",
-    "superjson": "^1.8.0"
+    "superjson": "^1.8.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
@@ -46,6 +47,7 @@
     "@types/react": "17.0.38",
     "@types/react-draft-wysiwyg": "^1.13.3",
     "@types/react-select": "^5.0.1",
+    "@types/uuid": "^8.3.3",
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.5",
     "tailwindcss": "^3.0.7",

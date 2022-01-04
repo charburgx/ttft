@@ -1,26 +1,28 @@
 import React, {FunctionComponent, useCallback, useContext, useEffect} from 'react';
-import {CategoryListContext} from "./App";
 import useAxios from "axios-hooks";
 import Select from "react-select";
+import { Post } from 'models/post';
 
 interface OwnProps {
-    onChange(results: number[]): void,
+    onChange(results: string[]): void,
     disabled?: boolean,
-    value?: number[]
+    value?: string[],
+    postlist?: { _id: string, title: string }[],
+    postlistLoading?: boolean
 }
 
 type Props = OwnProps;
 
-const PostSelect: FunctionComponent<Props> = (props) => {
-    const [ { data: postlist, loading, error } ] = useAxios<Pick<Post, "title" | "id">[], APIError>({ url: "/api/post/list" })
+const PostSelect: FunctionComponent<Props> = ({postlist, postlistLoading: loading, ...props}) => {
+    // const [ { data: postlist, loading, error } ] = useAxios<Pick<Post, "title" | "_id">[], APIError>({ url: "/api/post/list" })
 
     useEffect(() => {
-        console.log(postlist?.filter(post => !!post.title)?.map(post => ({ value: post.id, label: post.title })) ?? [])
+        console.log(postlist?.filter(post => !!post.title)?.map(post => ({ value: post._id, label: post.title })) ?? [])
     }, [postlist]);
 
 
     const options = useCallback(() => {
-        return postlist?.filter(post => !!post.title)?.map(post => ({ value: post.id, label: post.title })) ?? []
+        return postlist?.filter(post => !!post.title)?.map(post => ({ value: post._id, label: post.title })) ?? []
     }, [postlist])
 
     return (<Select

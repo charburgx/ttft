@@ -20,7 +20,11 @@ const handler = () => nc<HandlerRequest, NextApiResponse>({
         }
 
         if(err instanceof ValidationError) {
-            throwAPIError(res, 400, { message: "Validation error", fields: err.details as any })
+            const details = err.details as {[index: string]: string}[]
+
+            const errors = details.reduce((prev, curr) => ({ ...prev, ...curr }), {})
+
+            throwAPIError(res, 400, { message: "Validation error", errors: errors as any })
             return
         }
 

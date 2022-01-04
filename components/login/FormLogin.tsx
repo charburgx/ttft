@@ -51,7 +51,7 @@ const FormLogin: FunctionComponent<Props> = (props) => {
                 className="w-full"
                 placeholder={input.placeholder} type={input.type} value={data[input.value]} key={input.value}
                 onChange={(e) => setInput(input.value, e.target.value)}
-                error={(error?.fields ?? {})[input.value]}
+                error={(error?.errors ?? {})[input.value]}
             />)
         }
 
@@ -60,7 +60,7 @@ const FormLogin: FunctionComponent<Props> = (props) => {
             <Button text="Login" type='submit' />
         </div>
 
-        { error?.message && (!error?.fields) ?
+        { error?.message && (!error?.errors) ?
             <div className="mt-4">
                 <p className="text-form-err-500">{error?.message}</p>
             </div>

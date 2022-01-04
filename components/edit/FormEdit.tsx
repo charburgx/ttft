@@ -2,11 +2,11 @@ import React, {FunctionComponent, useCallback, useContext, useEffect, useReducer
 import useAxios from "axios-hooks";
 import Input from "../forms/Input";
 import {ContentState, convertToRaw, EditorState} from "draft-js";
-import {Editor} from "react-draft-wysiwyg";
+import type {Editor as EditorType} from "react-draft-wysiwyg";
+import dynamic from 'next/dynamic'
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
-import htmlToDraft from "html-to-draftjs";
-import {AuthContext, CategoryListContext} from "../App";
+import type htmlToDraftType from "html-to-draftjs";
 import {removeCond, removeNullOrEmpty} from "../../helpers/helpers";
 import CategorySelect from "../CategorySelect";
 import Button from "../forms/Button";
@@ -19,6 +19,23 @@ import FormMessage from "../forms/FormMessage";
 import axios from 'axios';
 import type {ObjectId} from 'mongodb'
 import { Edit } from '../../models/edit';
+import { useCategoryList } from 'client/categories';
+
+let htmlToDraft: typeof htmlToDraftType
+
+if(typeof window !== "undefined" && typeof window.navigator !== "undefined") {
+    import("html-to-draftjs")
+        .then(func => {
+            // @ts-ignore
+            htmlToDraft = func.default
+        })
+}
+
+// @ts-ignore
+const Editor = dynamic(() => import('react-draft-wysiwyg').then(mod => mod.Editor), { ssr: false }) as unknown as EditorType
+
+// @ts-ignore
+// const htmlToDraft = dynamic(() => import('html-to-draftjs'), { ssr: false }) as unknown as typeof htmlToDraftType
 
 // type Edit = {
 //     id: ObjectId,
@@ -33,7 +50,13 @@ import { Edit } from '../../models/edit';
 // } & Pick<Post, "image">
 
 interface OwnProps {
-    post: string
+    // post: string
+    slug?: string,
+    setSlug?: (slug: string) => void,
+    catlist?: string[],
+    catlistLoading?: boolean,
+    postlist?: {_id: string, title: string}[],
+    postlistLoading?: boolean
 }
 
 type Props = OwnProps;
@@ -45,15 +68,17 @@ const FormEdit: FunctionComponent<Props> = (props) => {
         categories: [],
         relatedPosts: [],
         title: "",
-        draft: false,
+        draft: true,
         featured: false,
-        slug: props.post,
-        image: null
+        slug: props.slug,
+        image: ''
     }
+
+    // const { catlist, catlistLoading } = useCategoryList()
 
     const [ editorState, setEditorState ] = useState<EditorState>();
     const [ state, setState ] = useReducer((state: Edit, action: Partial<Edit> & { options?: { refreshEditor?: boolean } }) => {
-        action = removeCond(action, obj => (!!obj || obj === 0))
+        action = removeCond(action, obj => (obj !== undefined))
         const options = action.options
         delete action.options
 
@@ -87,8 +112,18 @@ const FormEdit: FunctionComponent<Props> = (props) => {
     }, [editorState, editorHTML])
 
     // axios
-    const [ postData ] = useAxios<Edit, APIError>({ url: '/api/post/retrieve', method: 'get', params: { id: props.post } })
-    const [ updateData, update ] = useAxios<{message: string}, Edit, APIError>({ url: '/api/post/edit', method: 'put' }, {manual: true})
+    const [ postData, fetchPostData ] = useAxios<Edit, APIError>({ url: '/api/admin/post', method: 'get', params: { slug: props.slug } }, {manual: true})
+    const [ updateData, update ] = useAxios<{success: string, data: { slug: string }}, Edit, APIError>({ url: '/api/admin/edit', method: 'put' }, {manual: true})
+    
+    useEffect(() => {
+        if(!props.slug) return
+
+        fetchPostData()
+            .then(({data}) => {
+                setState({...data, options: { refreshEditor: true }})
+            })
+    }, [])
+
     const [ message, setMessage ] = useState<string | undefined>()
 
     const submit = (publish: boolean = false) => {
@@ -98,7 +133,13 @@ const FormEdit: FunctionComponent<Props> = (props) => {
 
         update({ data: data })
             .then((res) => {
-                // console.log(res)
+                const {slug: newSlug} = res.data.data
+
+                console.log(newSlug)
+
+                props.setSlug?.(newSlug)
+                setState({slug: newSlug})
+
                 setMessage(`Post ${publish ? 'published' : 'updated'} successfully.`)
             })
             .catch((err) => {
@@ -107,14 +148,16 @@ const FormEdit: FunctionComponent<Props> = (props) => {
             })
     }
 
-    useEffect(() => {
-        if(postData.data) {
-            setState({ ...postData.data, options: {refreshEditor: true} })
-        }
-    }, [postData])
+    // useEffect(() => {
+    //     if(postData.data) {
+    //         console.log("got here 1")
+
+    //         setState({ ...postData.data, options: {refreshEditor: true} })
+    //     }
+    // }, [postData])
 
     const loading = () => postData.loading || updateData.loading
-    const error = () => postData.error
+    const error = () => updateData.error
     const disabled = () => postData.error
     // const message = () => updateData.data
 
@@ -135,11 +178,11 @@ const FormEdit: FunctionComponent<Props> = (props) => {
                 }}
             />
             <Checkbox text={"Draft"} name="draft" id="draft" disabled={!!disabled() || loading()}
-                      checked={state.draft === true}
+                      checked={state.draft}
                       setChecked={c => setState({draft: c})} />
 
             <Checkbox text={"Featured"} name="featured" id="featured" disabled={!!disabled() || loading()}
-                      checked={state.featured === true}
+                      checked={state.featured}
                       setChecked={c => setState({featured: c})} className="ml-2" />
 
             <FormMessage message={message} />
@@ -155,13 +198,25 @@ const FormEdit: FunctionComponent<Props> = (props) => {
                className="w-full"
         />
 
-        <span className="label">Image</span>
-        <ImageUpload endpoint={'/api/post/upload_main'} imageURL={state.image ?? ''} id={props.post}
-            setImage={image => setState({image: image})}
+        <Input placeholder={"Image URL..."}
+            label={"Image"}
+            value={state.image}
+            onChange={e => setState({image: e.target.value})}
+            disabled={!!disabled()}
+            loading={loading()}
+            error={error()?.response?.data?.errors?.image}
+            className="w-full"
         />
+
+        {/* <span className="label">Image</span> */}
+        {/* <ImageUpload endpoint={'/api/post/upload_main'} imageURL={state.image ?? ''} id={props.post}
+            setImage={image => setState({image: image})}
+        /> */}
 
         <span className="label">Categories</span>
         <CategorySelect
+            loading={!!props.catlistLoading}
+            catlist={props.catlist}
             onChange={(cats) => setState({categories: cats})}
             value={state.categories}
             disabled={loading() || !!disabled()}
@@ -169,12 +224,15 @@ const FormEdit: FunctionComponent<Props> = (props) => {
 
         <span className="label">Similar Tools</span>
         <PostSelect
+            postlist={props.postlist}
+            postlistLoading={props.postlistLoading}
             onChange={(rposts) => setState({relatedPosts: rposts})}
             value={state.relatedPosts}
             disabled={loading() || !!disabled()}
         />
 
         <span className="label">Content</span>
+        {/* @ts-ignore */}
         <Editor
             editorState={editorState}
             onEditorStateChange={setEditorState}
@@ -187,16 +245,16 @@ const FormEdit: FunctionComponent<Props> = (props) => {
 
             readOnly={!!(loading() || disabled())}
 
-            uploadCallback={ async (file: object) => {
-                const fd = new FormData()
-                fd.append('image', file as Blob)
+            // uploadCallback={ async (file: object) => {
+            //     const fd = new FormData()
+            //     fd.append('image', file as Blob)
 
-                const axiosPost = axios.post(`/api/post/upload/${props.post}`, fd)
+            //     const axiosPost = axios.post(`/api/post/upload/${props.post}`, fd)
                                         
-                axiosPost.then((res) => console.log(res)).catch((err) => console.log(err))
+            //     axiosPost.then((res) => console.log(res)).catch((err) => console.log(err))
                 
-                return await axiosPost
-            }}
+            //     return await axiosPost
+            // }}
 
             toolbar={{
                 options: ['inline', 'blockType', 'list', 'textAlign', 'colorPicker', 'link', 'embedded', 'image', 'remove', 'history'],

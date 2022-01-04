@@ -28,12 +28,12 @@ const NavBar: FunctionComponent<Props> = (props) => {
           {(auth.loggedIn) ?
               <>
                 <li className="inline">
-                    <Entry href="/create" >
-                        <a className={entryClass} onClick={() => logout()}>
+                    <Entry href="/edit" >
+                        <a className={entryClass}>
                             Create
                         </a>
                     </Entry>
-                </li>
+                </li>   
                 <li className="inline">
                     <a className={entryClass + "hover:cursor-pointer"} onClick={() => logout()}>
                         Logout
@@ -41,7 +41,7 @@ const NavBar: FunctionComponent<Props> = (props) => {
                 </li>
                 <li className="inline">
                     <Entry href="/manage" >
-                        <a className={entryClass} onClick={() => logout()}>
+                        <a className={entryClass}>
                             Manage
                         </a>
                     </Entry>

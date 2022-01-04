@@ -1,26 +1,29 @@
 import useAxios from 'axios-hooks'
 import React, { FunctionComponent, useContext, useState } from 'react'
-import { CategoryListContext } from '../../App'
 import CategorySelectSingle from '../../CategorySelectSingle'
 import Button from '../Button'
 import FormMessage from '../FormMessage'
 import Input from '../Input'
 
-type Props = { }
+type Props = { 
+    refetchCatlist: () => void,
+    catlist?: string[],
+    catlistLoading: boolean
+}
 
-const CategoryRename: FunctionComponent<Props> = (props) => {
-    const [ {}, refetchCategories ] = useContext(CategoryListContext)
+const CategoryRename: FunctionComponent<Props> = ({refetchCatlist, catlist, catlistLoading}) => {
+    // const [ {}, refetchCategories ] = useContext(CategoryListContext)
     
     const [category, setCategory] = useState<string|undefined>()
     const [categoryName, setCategoryName] = useState<string>("")
     const [message, setMessage] = useState<string|undefined>()
-    const [ {data, loading, error}, submitHTTP ] = useAxios<{success: string}, APIError>({url: '/api/categories/rename', method: 'put'}, {manual: true})
+    const [ {data, loading, error}, submitHTTP ] = useAxios<{success: string}, any, APIError>({url: '/api/admin/category/rename', method: 'put'}, {manual: true})
 
     const submit = () => {
-        submitHTTP({params: { name: category, new_name: categoryName }})
+        submitHTTP({data: { name: category, new_name: categoryName }})
             .then((res) => {
                 setMessage(res.data.success)
-                refetchCategories()
+                refetchCatlist()
                 
                 setCategory(undefined)
                 setCategoryName("")
@@ -37,6 +40,9 @@ const CategoryRename: FunctionComponent<Props> = (props) => {
     return (<>
             <div className="selector">
                 <CategorySelectSingle 
+                    catlist={catlist}
+                    loading={catlistLoading}
+
                     onChange={cat => {
                         setCategory(cat)
                         setCategoryName(cat)

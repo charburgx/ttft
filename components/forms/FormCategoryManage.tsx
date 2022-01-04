@@ -3,24 +3,36 @@ import CategoryAdd from './categories/CategoryAdd'
 import CategoryRemove from './categories/CategoryRemove'
 import CategoryRename from './categories/CategoryRename'
 
-type Props = { }
+type Props = { 
+    catlist?: string[],
+    catlistLoading: boolean,
+    refetchCatlist: () => void
+}
 
-const FormCategoryManage: FunctionComponent<Props> = (props) => {
+const FormCategoryManage: FunctionComponent<Props> = ({catlist, catlistLoading, refetchCatlist}) => {
     return (<>
         <form className="formCategoryManage border-[1px] border-form-out2 p-4">
             <div>
                 <span className="label">Add Category</span>
-                <CategoryAdd />
+                <CategoryAdd refetchCatlist={refetchCatlist} />
             </div>
 
             <div>
                 <span className="label">Rename Category</span>
-                <CategoryRename />
+                <CategoryRename 
+                    refetchCatlist={refetchCatlist}
+                    catlist={catlist} 
+                    catlistLoading={catlistLoading} 
+                />
             </div>
 
             <div>
                 <span className="label">Remove Category</span>
-                <CategoryRemove />
+                <CategoryRemove 
+                    refetchCatlist={refetchCatlist} 
+                    catlist={catlist} 
+                    catlistLoading={catlistLoading} 
+                />
             </div>
         </form>
     </>)

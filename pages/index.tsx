@@ -2,6 +2,7 @@ import { UseAxiosResult } from 'axios-hooks'
 import type { GetStaticProps, NextPage } from 'next'
 import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
+import { getPosts } from 'server/db/posts'
 import { createPostsContext } from '../api/posts'
 import { AuthController } from '../api/user'
 import CategorySelect from '../components/CategorySelect'
@@ -14,11 +15,13 @@ import { database } from '../server/db'
 export const getStaticProps: GetStaticProps = async (context) => {
     const db = await database()
 
-    const posts = await db.collection('posts')
-        .find({draft: false})
-        .project({ _id: 0, image: 1, slug: 1, featured: 1, updated_at: 1, categories: 1, title: 1 })
-        .sort({ age: -1, created_at: -1 })
-        .toArray()
+    const posts = await getPosts(db, {includeDrafts: false})
+
+    // const posts = await db.collection('posts')
+    //     .find({draft: false})
+    //     .project({ _id: 0, image: 1, slug: 1, featured: 1, updated_at: 1, categories: 1, title: 1 })
+    //     .sort({ age: -1, created_at: -1 })
+    //     .toArray()
 
     const catlist = (await db.collection('categories')
         .find().toArray()).map(cat => cat.name)
@@ -36,7 +39,7 @@ const ABOUT_TEXT = "This is a collection of mostly free web-based tools that wil
 const DESC_TEXT = "A collection of mostly free web-based tools that will increase your own productivity and help you foster collaboration and creativity in the classroom."
 
 const Home: NextPage<{posts: Post[], categories: string[]}> = ({ posts: init_posts, categories: catlist }) => {
-  const { posts, loading, error, search } = createPostsContext(init_posts)
+    const { posts, loading, error, search } = createPostsContext(init_posts)
 
     const [ categories, setCategories ] = useState<string[]>([])
     const [ searchRaw, setSearchRaw ] = useState<string>("")

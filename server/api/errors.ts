@@ -9,7 +9,7 @@ type APIErrorFields = [
 
 export interface APIErrorJson {
     message: string
-    fields?: APIErrorFields
+    errors?: APIErrorFields
 }
 
 export class AuthenticationError extends Error {

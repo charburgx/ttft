@@ -4,7 +4,7 @@ type Post = {
     _id?: ObjectId;
     slug: string;
     title: string;
-    image: string | null;
+    image: string|undefined;
     content: string;
     draftContent: string;
     draft: boolean;

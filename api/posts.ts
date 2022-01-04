@@ -1,9 +1,10 @@
 import useAxios from "axios-hooks";
-import {useCallback, useEffect, useReducer, useState} from "react";
-import {AxiosError} from "axios";
+import {useCallback, useContext, useEffect, useReducer, useState} from "react";
+import axios, {Axios, AxiosError} from "axios";
 import {removeNullOrEmpty} from "../helpers/helpers";
 import { Post } from "../models/post";
 import Fuse from 'fuse.js'
+import { AuthContext } from "./user";
 
 type GetPostsParams = {
     categories?: Nullable<string[]>
@@ -24,13 +25,30 @@ export type PostController = {
 
 // const POSTS_URI = '/api/posts'
 
-function createPostsContext(init_posts: Post[]): PostController {
-    const [posts, setPosts] = useState<Post[]>(init_posts)
+function createPostsContext(first_posts: Post[]): PostController {
+    const {loggedIn} = useContext(AuthContext)
+
+    const [ srcPosts, setSrcPosts ] = useState<Post[]>(first_posts)
+    const [ loading, setLoading ] = useState<boolean>(false)
+
+    useEffect(() => {
+        if(!loggedIn) return
+
+        setLoading(true)
+
+        axios.get<{data: Post[]}>('/api/admin/posts')
+            .then(res => {
+                setSrcPosts(res.data.data)
+                setLoading(false)
+            })
+    }, [loggedIn])
+
+    const [posts, setPosts] = useState<Post[]>(first_posts)
 
     const query = (val: string, categories: string[]) => {
         const sq = val ?? ''
 
-        let p = init_posts
+        let p = srcPosts
 
         if(categories.length > 0) {
             p = p.filter(ps => ps.categories.some(cat => categories.includes(cat)))
@@ -48,7 +66,7 @@ function createPostsContext(init_posts: Post[]): PostController {
     return {
         posts: posts,
         search: query,
-        loading: false
+        loading: loading
     }
 
     // const [ nextUri, setNextUri ] = useState<string|undefined>(POSTS_URI);
