@@ -12,11 +12,13 @@ export async function getPosts(db: MongoClient.Db, options?: { includeDrafts: bo
     return posts
 }
 
-export async function getPost(db: MongoClient.Db, slug: string) {
+export async function getPost(db: MongoClient.Db, slug: string, options?: { draftContent: boolean }) {
+    const drafts = options?.draftContent ? { draftContent: 1 } : { }
+
     const posts = await db.collection('posts')
         .find({slug})
         .limit(1)
-        .project({ _id: 0, slug: 1, title: 1, image: 1, content: 1, published_at: 1, created_at: 1, uploaded_at: 1, categories: 1, relatedPosts: 1, draft: 1 })
+        .project({ _id: 0, slug: 1, title: 1, image: 1, content: 1, published_at: 1, created_at: 1, uploaded_at: 1, categories: 1, relatedPosts: 1, draft: 1, ...drafts })
         .toArray()
 
     const post = posts[0]

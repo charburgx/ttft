@@ -15,7 +15,7 @@ export default handler()
 
         const db = await database()
 
-        const post = await getPost(db, slug)
+        const post = await getPost(db, slug, { draftContent: true })
 
         res.json({data: post})
     })

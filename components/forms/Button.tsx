@@ -6,7 +6,9 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     loading?: boolean
 };
 
-const Button: FunctionComponent<Props> = (props) => {
+const Button: FunctionComponent<Props> = (p) => {
+
+  const { loading, ...props } = p
 
   return (<button {...props} className={`
     p-2.5
@@ -14,8 +16,8 @@ const Button: FunctionComponent<Props> = (props) => {
     ${props.primary ? 'btn-primary' : 'btn-secondary'}
     transition-colors
     rounded-sm
-    ${props.loading ? 'cursor-wait' : ''}
-  ` + " " +  (props.className ?? '') } disabled={props.disabled || props.loading}
+    ${loading ? 'cursor-wait' : ''}
+  ` + " " +  (props.className ?? '') } disabled={props.disabled || loading}
   
     onClick={(props.type != 'submit') ? e => { e.preventDefault(); props.onClick?.(e) } : props.onClick}
   >

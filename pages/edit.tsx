@@ -34,6 +34,10 @@ const EditPage: NextPage = () => {
         router.push(router, undefined, { shallow: true })
     }
 
+    useEffect(() => {
+        console.log(router.query)
+    }, [router.query])
+
     const { catlist, catlistLoading } = useCategoryList()
     const [ { data: postlistData, loading: postlistLoading } ] = useAxios<{data: {_id: string, title: string}[]}>('/api/admin/postlist')
 
