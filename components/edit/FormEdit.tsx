@@ -122,7 +122,7 @@ const FormEdit: FunctionComponent<Props> = (props) => {
             .then(({data}) => {
                 setState({...data, options: { refreshEditor: true }})
             })
-    }, [])
+    }, [props.slug])
 
     const [ message, setMessage ] = useState<string | undefined>()
 
