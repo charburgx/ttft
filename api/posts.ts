@@ -31,6 +31,8 @@ function createPostsContext(first_posts: Post[]): PostController {
     const [ srcPosts, setSrcPosts ] = useState<Post[]>(first_posts)
     const [ loading, setLoading ] = useState<boolean>(false)
 
+    const [posts, setPosts] = useState<Post[]>(first_posts)
+
     useEffect(() => {
         if(!loggedIn) return
 
@@ -39,11 +41,10 @@ function createPostsContext(first_posts: Post[]): PostController {
         axios.get<{data: Post[]}>('/api/admin/posts')
             .then(res => {
                 setSrcPosts(res.data.data)
+                setPosts(res.data.data)
                 setLoading(false)
             })
-    }, [loggedIn])
-
-    const [posts, setPosts] = useState<Post[]>(first_posts)
+    }, [loggedIn, setSrcPosts, setLoading, setPosts])
 
     const query = (val: string, categories: string[]) => {
         const sq = val ?? ''
