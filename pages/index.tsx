@@ -30,7 +30,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
         props: {
             posts: posts,
             categories: catlist
-        }
+        },
+        revalidate: 60
     }
 }
 

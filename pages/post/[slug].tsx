@@ -45,8 +45,10 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return {
         props: {
             post,
-            slug: context.params!.slug as string
-        }
+            slug: context.params!.slug as string,
+            exists: !!post_og
+        },
+        revalidate: 60
     }
 }
 
@@ -61,11 +63,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     return {
         paths: slugs.map(slug => ({ params: { slug: slug } })),
-        fallback: false
+        fallback: true
     }
 }
 
-const PostPage: NextPage<{post: Post|undefined, slug: string}> = ({post, slug}) => {
+const PostPage: NextPage<{post: Post|undefined, slug: string, exists: boolean}> = ({post, slug, exists}) => {
     // const { slug } = useParams<{ slug?: string }>()
     // if(!slug) { return <Redirect to={"/"} /> }
 
@@ -76,6 +78,14 @@ const PostPage: NextPage<{post: Post|undefined, slug: string}> = ({post, slug}) 
 
     const [ data, setData ] = useState<Post|undefined>(post)
     const [ loading, setLoading ] = useState<boolean>(!post)
+
+    useEffect(() => {
+        setLoading(history.isFallback)
+    }, [history.isFallback])
+
+    useEffect(() => {
+        if(exists === false) history.push("/")
+    }, [exists])
 
     useEffect(() => {
         if(loggedIn !== true) return
