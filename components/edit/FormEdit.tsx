@@ -20,6 +20,7 @@ import axios from 'axios';
 import type {ObjectId} from 'mongodb'
 import { Edit } from '../../models/edit';
 import { useCategoryList } from 'client/categories';
+import { ErrorBoundary } from 'react-error-boundary';
 
 let htmlToDraft: typeof htmlToDraftType
 
@@ -84,8 +85,11 @@ const FormEdit: FunctionComponent<Props> = (props) => {
 
         const newState = { ...defaultState, ...state, ...action }
 
+        // console.log(newState.draftContent)
+
         if(options?.refreshEditor) {
-            setEditorState(editorStateFromHTML(newState.draftContent))
+            const es = editorStateFromHTML(newState.draftContent)
+            setEditorState(es)
         }
 
         return newState
@@ -232,45 +236,49 @@ const FormEdit: FunctionComponent<Props> = (props) => {
         />
 
         <span className="label">Content</span>
-        {/* @ts-ignore */}
-        <Editor
-            editorState={editorState}
-            onEditorStateChange={setEditorState}
+        <ErrorBoundary
+            fallbackRender={() => <p>Something went wrong...</p>}
+        >
+            {/* @ts-ignore */}
+            <Editor
+                editorState={editorState}
+                onEditorStateChange={setEditorState}
 
-            wrapperClassName={"wys-wrapper" + " " + (raw ? "hidden" : "")}
-            editorClassName="wys-editor headers"
-            toolbarClassName="wys-toolbar"
+                wrapperClassName={"wys-wrapper" + " " + (raw ? "hidden" : "")}
+                editorClassName="wys-editor headers"
+                toolbarClassName="wys-toolbar"
 
-            placeholder="Content..."
+                placeholder="Content..."
 
-            readOnly={!!(loading() || disabled())}
+                readOnly={!!(loading() || disabled())}
 
-            // uploadCallback={ async (file: object) => {
-            //     const fd = new FormData()
-            //     fd.append('image', file as Blob)
-
-            //     const axiosPost = axios.post(`/api/post/upload/${props.post}`, fd)
-                                        
-            //     axiosPost.then((res) => console.log(res)).catch((err) => console.log(err))
-                
-            //     return await axiosPost
-            // }}
-
-            toolbar={{
-                options: ['inline', 'blockType', 'list', 'textAlign', 'colorPicker', 'link', 'embedded', 'image', 'remove', 'history'],
-                // uploadCallback: async (file: object) => {
+                // uploadCallback={ async (file: object) => {
                 //     const fd = new FormData()
                 //     fd.append('image', file as Blob)
 
-                //     const axiosResponse = await axios.post(`/api/post/upload/${props.post}`, fd)
+                //     const axiosPost = axios.post(`/api/post/upload/${props.post}`, fd)
+                                            
+                //     axiosPost.then((res) => console.log(res)).catch((err) => console.log(err))
                     
-                //     return axiosResponse
-                
-                // },
-                uploadEnabled: true,
-                inputAccept: 'image/jpg,.jpg'
-            }}
-        />
+                //     return await axiosPost
+                // }}
+
+                toolbar={{
+                    options: ['inline', 'blockType', 'list', 'textAlign', 'colorPicker', 'link', 'embedded', 'image', 'remove', 'history'],
+                    // uploadCallback: async (file: object) => {
+                    //     const fd = new FormData()
+                    //     fd.append('image', file as Blob)
+
+                    //     const axiosResponse = await axios.post(`/api/post/upload/${props.post}`, fd)
+                        
+                    //     return axiosResponse
+                    
+                    // },
+                    uploadEnabled: true,
+                    inputAccept: 'image/jpg,.jpg'
+                }}
+            />
+        </ErrorBoundary>
 
         <TextArea
             placeholder="Raw content..."
