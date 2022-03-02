@@ -61,7 +61,7 @@ const NavBar: FunctionComponent<Props> = (props) => {
           : ''}
 
           {!auth.loggedIn ? ["Browse the Tools", "About", "Contact"].map(name => <li key={name} className="inline">
-              <Entry href="">
+              <Entry href="/">
                   <a className={entryClass}>{name}</a>
               </Entry>
           </li>) : ''}

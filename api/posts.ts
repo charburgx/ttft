@@ -1,10 +1,11 @@
 import useAxios from "axios-hooks";
 import {useCallback, useContext, useEffect, useReducer, useState} from "react";
 import axios, {Axios, AxiosError} from "axios";
-import {removeNullOrEmpty} from "../helpers/helpers";
+import {isClient, removeNullOrEmpty} from "../helpers/helpers";
 import { Post } from "../models/post";
 import Fuse from 'fuse.js'
 import { AuthContext } from "./user";
+import { event as gaevent } from '../helpers/ga'
 
 type GetPostsParams = {
     categories?: Nullable<string[]>
@@ -26,7 +27,7 @@ export type PostController = {
 // const POSTS_URI = '/api/posts'
 
 function createPostsContext(first_posts: Post[]): PostController {
-    const {loggedIn} = useContext(AuthContext)
+    const { loggedIn } = useContext(AuthContext)
 
     const [ srcPosts, setSrcPosts ] = useState<Post[]>(first_posts)
     const [ loading, setLoading ] = useState<boolean>(false)
@@ -59,6 +60,15 @@ function createPostsContext(first_posts: Post[]): PostController {
             p = (new Fuse(p, { keys: [ 'title' ] }))
                 .search(sq)
                 .map(res => res.item)
+        }
+
+        if(isClient()) {
+            gaevent({
+                action: "search",
+                params : {
+                    search_term: query
+                }
+            })
         }
 
         setPosts(p)

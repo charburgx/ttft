@@ -12,3 +12,6 @@ export function removeCond(obj: { [index: string]: any }, cond: (obj: any) => bo
     Object.keys(obj).forEach((k) => (!cond(obj[k])) && delete obj[k])
     return obj
 }
+
+export const isClient = () => typeof window !== 'undefined'
+export const isServer = () => typeof window === 'undefined'

@@ -25,8 +25,14 @@ const HomePage: FunctionComponent<Props> = (props) => {
     const [ searchRaw, setSearchRaw ] = useState<string>("")
     const [ searchQueryString, setSearchQueryString ] = useState<string>("")
 
+    const search = (text: string) => {
+        
+
+        setSearchQueryString(text)
+    }
+
     useEffect(() => {
-        const searchTimeout = setTimeout(() => { setSearchQueryString(searchRaw) }, 200)
+        const searchTimeout = setTimeout(() => { search(searchRaw) }, 200)
         return () => clearTimeout(searchTimeout)
     }, [searchRaw])
 
@@ -62,6 +68,7 @@ const HomePage: FunctionComponent<Props> = (props) => {
 
                 <div className="sm:w-1/3">
                     <CategorySelect
+                        loading={false}
                         onChange={setCategories}
                     />
                 </div>
